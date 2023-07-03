@@ -2,6 +2,7 @@
 import { useState, useEffect, Dispatch, SetStateAction } from "react";
 import axios from "axios";
 
+const SERVER_API_URL = process.env.REACT_APP_SERVER_API_URL;
 
 type ImageProps = {
   key: number;
@@ -24,11 +25,10 @@ export default function Home() {
 
   const fetchImages = async () => {
     try {
-      const response = await axios.get('http://localhost:9000/meme');
+      const response = await axios.get(SERVER_API_URL + '/meme');
       const { urlExtensions } = response.data;
-      const urls = urlExtensions.map((urlExtension: string) => `http://localhost:9000${urlExtension}`);
+      const urls = urlExtensions.map((urlExtension: string) => SERVER_API_URL + `${urlExtension}`);
       setImageList(urls);
-
       // Set the focusImage to the first image from the fetched list
       if (urls.length > 0) {
         setFocusImage(urls[0]);
@@ -55,7 +55,7 @@ export default function Home() {
   )
 }
 
-export function InputPrompt({ setFocusImage, setImageList }: { setFocusImage: Dispatch<SetStateAction<string | null>>, setImageList: Dispatch<SetStateAction<string[]>> }) {
+function InputPrompt({ setFocusImage, setImageList }: { setFocusImage: Dispatch<SetStateAction<string | null>>, setImageList: Dispatch<SetStateAction<string[]>> }) {
   const [inputValue, setInputValue] = useState('');
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -63,12 +63,11 @@ export function InputPrompt({ setFocusImage, setImageList }: { setFocusImage: Di
 
     setFocusImage(null);
   
-    axios.post('http://localhost:9000/meme', { text: inputValue })
+    axios.post(SERVER_API_URL + '/meme', { text: inputValue })
       .then(response => {
         if (response.status === 200) {
           const { urlExtension } = response.data;
-          const url = `http://localhost:9000${urlExtension}`;
-          console.log(url);
+          const url = SERVER_API_URL + `${urlExtension}`;
           setFocusImage(url); // Set focusImage to the contents value
           setImageList((prevImageList) => [...prevImageList, url]) // Append the new image to the end of the imageList
         } else {
@@ -110,7 +109,7 @@ export function InputPrompt({ setFocusImage, setImageList }: { setFocusImage: Di
   )
 }
 
-export function FocusImage(props: FocusImageProps) {
+function FocusImage(props: FocusImageProps) {
   return (
     <div className="w-full mb-10 flex justify-center">
       {!props.path && <div
@@ -125,7 +124,7 @@ export function FocusImage(props: FocusImageProps) {
   )
 }
 
-export function Image(props: ImageProps) {
+function Image(props: ImageProps) {
   return (
     <div className="flex w-1/3 flex-wrap">
       <div className="w-full p-1 md:p-2" onClick={() => props.onClick(props.path)}>
