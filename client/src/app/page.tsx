@@ -1,22 +1,126 @@
+"use client";
+import { useState, useEffect, Dispatch, SetStateAction } from "react";
+import axios from "axios";
+
+
 type ImageProps = {
   key: number;
-  path: string;
+  path: string | null;
+  onClick: (path: string | null) => void;
+  isFocused: boolean;
+}
+
+type FocusImageProps = {
+  path: string | null;
 }
 
 export default function Home() {
-  function renderImages() {
-    const images = [];
-    for (let i = 0; i < 10; i++) {
-      images.push(<Image path={"https://tecdn.b-cdn.net/img/Photos/Horizontal/Nature/4-col/img%20(73).webp"} key={i} />);
+  const [focusImage, setFocusImage] = useState<string | null>('unset');
+  const [imageList, setImageList] = useState<string[]>([]);
+
+  useEffect(() => {
+    fetchImages();
+  }, []);
+
+  const fetchImages = async () => {
+    try {
+      const response = await axios.get('http://localhost:9000/meme');
+      const { urlExtensions } = response.data;
+      const urls = urlExtensions.map((urlExtension: string) => `http://localhost:9000${urlExtension}`);
+      setImageList(urls);
+
+      // Set the focusImage to the first image from the fetched list
+      if (urls.length > 0) {
+        setFocusImage(urls[0]);
+      }
+    } catch (error) {
+      console.error('Error fetching images:', error);
     }
-    return images;
-  }
+  };
+
+  const renderImages = () => {
+    return imageList.map((imagePath, index) => (
+      <Image path={imagePath} key={index} onClick={setFocusImage} isFocused={focusImage === imagePath} />
+    ));
+  };
 
   return (
-    <div className="container mx-auto px-5 py-2 lg:px-32 lg:pt-12">
+    <div className="container mb-32 mx-auto px-5 py-2 lg:px-32 lg:pt-12">
       <div className="-m-1 flex flex-wrap md:-m-2">
+        <InputPrompt setFocusImage={setFocusImage} setImageList={setImageList} />
+        {focusImage !== 'unset' && <FocusImage path={focusImage} />}
         {renderImages()}
       </div>
+    </div>
+  )
+}
+
+export function InputPrompt({ setFocusImage, setImageList }: { setFocusImage: Dispatch<SetStateAction<string | null>>, setImageList: Dispatch<SetStateAction<string[]>> }) {
+  const [inputValue, setInputValue] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    setFocusImage(null);
+  
+    axios.post('http://localhost:9000/meme', { text: inputValue })
+      .then(response => {
+        if (response.status === 200) {
+          const { urlExtension } = response.data;
+          const url = `http://localhost:9000${urlExtension}`;
+          console.log(url);
+          setFocusImage(url); // Set focusImage to the contents value
+          setImageList((prevImageList) => [...prevImageList, url]) // Append the new image to the end of the imageList
+        } else {
+          console.error('An error occurred!', response.data);
+        }
+      })
+      .catch(error => {
+        console.error('An error occurred!', error);
+      })
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
+  };
+
+  return (
+    <div className="w-full mb-10 flex justify-center">
+      <form onSubmit={handleSubmit}>
+        <label
+          className="flex justify-center text-xl block mb-2 font-medium text-gray-900 dark:text-white"
+        >
+          AI Meme Generator
+        </label>
+        <input
+          className="w-96 mr-2 focus:outline-none bg-gray-50 border text-gray-900 text-sm rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+          onChange={handleInputChange}
+          placeholder="Enter meme prompt..."
+          required
+        >
+        </input>
+        <button
+          type="submit"
+          className="text-white bg-blue-700 border dark:border-gray-600 hover:bg-blue-800 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700"
+        >
+          Submit
+        </button>
+      </form>
+    </div>
+  )
+}
+
+export function FocusImage(props: FocusImageProps) {
+  return (
+    <div className="w-full mb-10 flex justify-center">
+      {!props.path && <div
+        className="animate-pulse block w-1/2 aspect-square rounded-lg object-cover object-center bg-gray-200 dark:bg-gray-700"
+      />}
+      {props.path && <img
+        alt="gallery"
+        className="block w-1/2 h-full rounded-lg object-cover object-center"
+        src={props.path}
+      />}
     </div>
   )
 }
@@ -24,13 +128,16 @@ export default function Home() {
 export function Image(props: ImageProps) {
   return (
     <div className="flex w-1/3 flex-wrap">
-    <div className="w-full p-1 md:p-2">
-      <img
-        alt="gallery"
-        className="block h-full w-full rounded-lg object-cover object-center"
-        src={props.path} />
+      <div className="w-full p-1 md:p-2" onClick={() => props.onClick(props.path)}>
+        {!props.path && <div
+          className={`animate-pulse block w-full aspect-square rounded-lg object-cover object-center bg-gray-200 dark:bg-gray-700`}
+        />}
+        {props.path && <img
+          alt="gallery"
+          className={`block h-full w-full rounded-lg object-cover object-center filter hover:brightness-75 transition duration-300`}
+          src={props.path}
+        />}
+      </div>
     </div>
-  </div>
   )
 }
-

@@ -5,7 +5,7 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
   title: 'AI Meme Generator',
-  description: 'Fun Memes! Made with AI!',
+  description: 'Fun Memes Made With AI!',
 }
 
 export default function RootLayout({
