@@ -2,7 +2,7 @@ var express = require("express");
 var axios = require('axios');
 var fs = require("fs");
 var path = require('path');
-var Jimp = require("jimp");
+const { createCanvas, loadImage, registerFont } = require('canvas');
 var router = express.Router();
 require('dotenv').config();
 
@@ -23,6 +23,9 @@ router.use(express.static(memeDirectory));
 
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
+
+// Set impact font for text overlay
+registerFont('./fonts/impact.ttf', { family: 'Impact' });
 
 router.get('/', function (req, res) {
     fs.readdir(memeDirectory, (err, files) => {
@@ -80,8 +83,8 @@ router.post('/', async function(req, res) {
             return res.status(500).json({ error: 'Invalid meme text JSON format' });
         }
       
-        topText = memeTextJSON.top_text;
-        bottomText = memeTextJSON.bottom_text;
+        topText = memeTextJSON.top_text.toUpperCase();
+        bottomText = memeTextJSON.bottom_text.toUpperCase();
 
     } catch (error) {
         console.error('Error generating meme text:', error);
@@ -115,22 +118,56 @@ router.post('/', async function(req, res) {
     
         fs.writeFileSync(rawFilePath, response.data);
 
-        // Load the Jimp fonts
-        const font = await Jimp.loadFont(Jimp.FONT_SANS_32_BLACK); // Load the font (Change this to your desired font)
-
-        // Read the image with Jimp
-        let image = await Jimp.read(rawFilePath);
-
-        // Overlay the text onto the image
-        image.print(font, 10, 10, topText) // Position the texts as needed
-                .print(font, 10, 60, bottomText);
-
-    
         const memeFileName = `meme_${id}.jpg`;
         const memeFilePath = path.join(__dirname, '..', 'data', memeFileName);
 
-        // Write the modified image to disk
-        await image.writeAsync(memeFilePath);
+        loadImage(rawFilePath).then((image) => {
+            const canvas = createCanvas(image.width, image.height);
+            const context = canvas.getContext('2d');
+            
+            // Draw the image onto the canvas
+            context.drawImage(image, 0, 0, image.width, image.height);
+            
+            // Configure text settings
+            context.font = 'bold 35px Impact';
+            context.textAlign = 'center';
+            context.fillStyle = 'white';
+            context.strokeStyle = 'black';
+            context.lineWidth = 3;
+          
+            topText = topText.split(' ');
+            if (topText.length > 3) {
+              topText[2] += '\n';
+            }
+            topText = topText.join(' ');
+          
+            bottomText = bottomText.split(' ');
+            if (bottomText.length > 3) {
+              bottomText[2] += '\n';
+            }
+            bottomText = bottomText.join(' ');
+          
+            topText = topText.split('\n');
+            for (let i = 0; i < topText.length; i++) {
+              context.strokeText(topText[i], image.width / 2, 40 + i * 40);
+              context.fillText(topText[i], image.width / 2, 40 + i * 40);
+            }
+          
+            bottomText = bottomText.split('\n');
+            for (let i = bottomText.length - 1; i >= 0; i--) {
+              context.strokeText(bottomText[i], image.width / 2, image.height - 60 + i * 40);
+              context.fillText(bottomText[i], image.width / 2, image.height - 60 + i * 40);
+            }
+          
+            // Create a buffer of the image data
+            const buffer = canvas.toBuffer('image/png');
+          
+            // Write the buffer to the file
+            fs.writeFileSync(memeFilePath, buffer);
+          }).catch((error) => {
+            console.error('Error generating meme image:', error);
+            return res.status(500).json({ error: 'An error occurred while generating the meme image.' });
+          });
 
         // Delete the original image file
         fs.unlinkSync(rawFilePath);

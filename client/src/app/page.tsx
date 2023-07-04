@@ -69,7 +69,7 @@ function InputPrompt({ setFocusImage, setImageList }: { setFocusImage: Dispatch<
           const { urlExtension } = response.data;
           const url = SERVER_API_URL + `${urlExtension}`;
           setFocusImage(url); // Set focusImage to the contents value
-          setImageList((prevImageList) => [...prevImageList, url]) // Append the new image to the end of the imageList
+          setImageList((prevImageList) => [url, ...prevImageList]);
         } else {
           console.error('An error occurred!', response.data);
         }
@@ -84,17 +84,17 @@ function InputPrompt({ setFocusImage, setImageList }: { setFocusImage: Dispatch<
   };
 
   return (
-    <div className="w-full mb-10 flex justify-center">
-      <form onSubmit={handleSubmit}>
+    <>
+      <form onSubmit={handleSubmit} className="w-full my-10 flex flex-wrap justify-center">
         <label
-          className="flex justify-center text-xl block mb-2 font-medium text-gray-900 dark:text-white"
+          className="flex flex-shrink-0 w-full justify-center text-3xl mb-2 font-medium text-gray-900 dark:text-white"
         >
           AI Meme Generator
         </label>
         <input
-          className="w-96 mr-2 focus:outline-none bg-gray-50 border text-gray-900 text-sm rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+          className="flex flex-shrink-0 sm:w-1/3 w-1/2 mr-2 focus:outline-none bg-gray-50 border text-gray-900 text-sm rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
           onChange={handleInputChange}
-          placeholder="Enter meme prompt..."
+          placeholder="Enter prompt..."
           required
         >
         </input>
@@ -105,7 +105,7 @@ function InputPrompt({ setFocusImage, setImageList }: { setFocusImage: Dispatch<
           Submit
         </button>
       </form>
-    </div>
+    </>
   )
 }
 

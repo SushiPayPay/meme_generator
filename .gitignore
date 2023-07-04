@@ -42,6 +42,7 @@ client/next-env.d.ts
 
 # SERVER
 
+server/data
 server/node_modules
 server/.env
 server/.env.*
