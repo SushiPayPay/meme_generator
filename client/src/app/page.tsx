@@ -25,7 +25,7 @@ export default function Home() {
 
   const fetchImages = async () => {
     try {
-      const response = await axios.get(SERVER_API_URL + '/meme');
+      const response = await axios.get(`${SERVER_API_URL}/meme`);
       const { urlExtensions } = response.data;
       const urls = urlExtensions.map((urlExtension: string) => SERVER_API_URL + `${urlExtension}`);
       setImageList(urls);
@@ -63,7 +63,7 @@ function InputPrompt({ setFocusImage, setImageList }: { setFocusImage: Dispatch<
 
     setFocusImage(null);
   
-    axios.post(SERVER_API_URL + '/meme', { text: inputValue })
+    axios.post(`${SERVER_API_URL}/meme`, { text: inputValue })
       .then(response => {
         if (response.status === 200) {
           const { urlExtension } = response.data;
