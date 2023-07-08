@@ -63,20 +63,30 @@ function InputPrompt({ setFocusImage, setImageList }: { setFocusImage: Dispatch<
 
     setFocusImage(null);
   
-    axios.post(`${SERVER_API_URL}/meme`, { text: inputValue })
-      .then(response => {
-        if (response.status === 200) {
-          const { urlExtension } = response.data;
-          const url = SERVER_API_URL + `${urlExtension}`;
-          setFocusImage(url); // Set focusImage to the contents value
-          setImageList((prevImageList) => [url, ...prevImageList]);
-        } else {
-          console.error('An error occurred!', response.data);
-        }
-      })
-      .catch(error => {
-        console.error('An error occurred!', error);
-      })
+    axios.post(`${SERVER_API_URL}/meme`, { text: inputValue }, {
+      validateStatus: function (status) {
+        return true; // I'm always okay with the result (we handle errors later)
+      },
+    })
+    .then(response => {
+      if (response.status === 200) {
+        const { urlExtension } = response.data;
+        const url = SERVER_API_URL + `${urlExtension}`;
+        setFocusImage(url); // Set focusImage to the contents value
+        setImageList((prevImageList) => [url, ...prevImageList]);
+      } else if (response.status === 406) {
+        console.error('A 406 error occurred!', response.data);
+        setFocusImage(SERVER_API_URL + '/meme/meme_unacceptable.jpg');
+      } else if (response.status === 500) {
+        console.error('A 500 error occurred!', response.data);
+        setFocusImage(SERVER_API_URL + '/meme/meme_internal_error.jpg');
+      } else {
+        console.error('An error occurred!', response.data);
+      }
+    })
+    .catch(error => {
+      console.error('An network error occurred!', error);
+    });
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

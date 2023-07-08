@@ -18,8 +18,10 @@ if (!fs.existsSync(memeDirectory)) {
     fs.mkdirSync(memeDirectory, { recursive: true });
 }
 
-// Serve the data directory as a static folder
-router.use(express.static(memeDirectory));
+router.use(express.static(memeDirectory, {
+  maxAge: 86400000,
+  etag: false
+}));
 
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
@@ -35,7 +37,7 @@ router.get('/', function (req, res) {
       }
   
       const urlExtensions = files.map((file) => `/meme/${file}`);
-  
+
       res.status(200).json({ urlExtensions });
     });
 });
@@ -68,7 +70,7 @@ router.post('/', async function(req, res) {
         const responseMessage = GPTResponse.data.choices[0].message;
       
         if (!responseMessage || !responseMessage.content) {
-            return res.status(500).json({ error: 'Invalid response from GPT-3.5 Turbo' });
+            return res.status(406).json({ error: 'Invalid response from GPT-3.5 Turbo' });
         }
       
         let memeTextJSON;
@@ -108,7 +110,7 @@ router.post('/', async function(req, res) {
         rawFilePath = path.join(__dirname, '..', 'data', rawFileName);
     } catch (error) {
         console.error('Error creating image:', error);
-        return res.status(500).json({ error: 'An error occurred while creating the image.' });
+        return res.status(406).json({ error: 'An error occurred while creating the image.' });
     }
     
     try {
