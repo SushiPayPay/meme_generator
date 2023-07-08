@@ -55,7 +55,7 @@ export default function Home() {
   )
 }
 
-function InputPrompt({ setFocusImage, setImageList }: { setFocusImage: Dispatch<SetStateAction<string | null>>, setImageList: Dispatch<SetStateAction<string[]>> }) {
+export function InputPrompt({ setFocusImage, setImageList }: { setFocusImage: Dispatch<SetStateAction<string | null>>, setImageList: Dispatch<SetStateAction<string[]>> }) {
   const [inputValue, setInputValue] = useState('');
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -119,7 +119,7 @@ function InputPrompt({ setFocusImage, setImageList }: { setFocusImage: Dispatch<
   )
 }
 
-function FocusImage(props: FocusImageProps) {
+export function FocusImage(props: FocusImageProps) {
   return (
     <div className="w-full mb-10 flex justify-center">
       {!props.path && <div
@@ -134,7 +134,7 @@ function FocusImage(props: FocusImageProps) {
   )
 }
 
-function Image(props: ImageProps) {
+export function Image(props: ImageProps) {
   return (
     <div className="flex w-1/3 flex-wrap">
       <div className="w-full p-1 md:p-2" onClick={() => props.onClick(props.path)}>
