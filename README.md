@@ -2,31 +2,26 @@
 
 Makes memes with AI. Powered by DallE and ChatGPT. Just enter a prompt and get a meme!
 
-## Prerequisites
-Before you start, you need to have Node.js installed on your computer. If you haven't already done so, you can download it [here](https://nodejs.org/en/download/).
-
-You can verify the installation by running the following command:
-
-```bash
-node -v
-```
-
 ## Installation
 
 1. **Install dependencies**
 
-    Use your package manager to install the necessary dependencies:
-
+    Update and use your package manager to install the necessary dependencies:
+   
     ```bash
-    sudo apt install build-essential libcairo2-dev libjpeg-dev libpango1.0-dev libgif-dev
+    sudo apt update
     ```
 
-2. **Clone the repository**
+    ```bash
+    sudo apt install build-essential libcairo2-dev libjpeg-dev libpango1.0-dev libgif-dev nodejs npm
+    ```
+
+3. **Clone the repository**
     ```
     git clone https://github.com/SushiPayPay/meme_generator.git
     ```
 
-3. **Clone the repository and install node packages**
+4. **Clone the repository and install node packages**
 
     First, navigate to the 'client' directory and install the Node packages.
 
@@ -40,7 +35,7 @@ node -v
     npm install
     ```
 
-4. **Set up your environment file**
+5. **Set up your environment file**
 
     Open the .env file in the server directory and add your OPENAI_API_KEY
 
