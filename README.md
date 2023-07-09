@@ -18,7 +18,7 @@ node -v
     Use your package manager to install the necessary dependencies:
 
     ```bash
-    sudo apt install build-base cairo-dev jpeg-dev pango-dev giflib-dev
+    sudo apt install build-essential libcairo2-dev libjpeg-dev libpango1.0-dev libgif-dev
     ```
 
 2. **Clone the repository**
