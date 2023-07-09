@@ -44,6 +44,16 @@ node -v
 
     Open the .env file in the server directory and add your OPENAI_API_KEY
 
+    Create an .env file in your client directory and set the *REACT_APP_SERVER_API_URL* environment variable by adding it to your .env file as follows. The following works for local development. The backend runs on port 9000 by default.
+    ```
+    REACT_APP_SERVER_API_URL=http://localhost:9000
+    ```
+
+    Create another .env file in your server directory and set the *OPENAI_API_KEY* environment variable by adding it to your .env file as follows:
+    ```
+    OPENAI_API_KEY=<Your API key here>
+    ```
+
 ## Running the Project
 
 1. **Running the Frontend**

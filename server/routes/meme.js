@@ -13,12 +13,22 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration);
 
 const memeDirectory = path.join(__dirname, '../data/');
+const errorDirectory = path.join(__dirname, '../errors/');
 
 if (!fs.existsSync(memeDirectory)) {
     fs.mkdirSync(memeDirectory, { recursive: true });
 }
 
 router.use(express.static(memeDirectory, {
+  maxAge: 86400000,
+  etag: false
+}));
+
+if (!fs.existsSync(errorDirectory)) {
+  fs.mkdirSync(errorDirectory, { recursive: true });
+}
+
+router.use('/error', express.static(errorDirectory, {
   maxAge: 86400000,
   etag: false
 }));

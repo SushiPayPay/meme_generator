@@ -76,10 +76,10 @@ export function InputPrompt({ setFocusImage, setImageList }: { setFocusImage: Di
         setImageList((prevImageList) => [url, ...prevImageList]);
       } else if (response.status === 406) {
         console.error('A 406 error occurred!', response.data);
-        setFocusImage(SERVER_API_URL + '/meme/meme_unacceptable.jpg');
+        setFocusImage(SERVER_API_URL + '/meme/error/meme_unacceptable.jpg');
       } else if (response.status === 500) {
         console.error('A 500 error occurred!', response.data);
-        setFocusImage(SERVER_API_URL + '/meme/meme_internal_error.jpg');
+        setFocusImage(SERVER_API_URL + '/meme/error/meme_internal_error.jpg');
       } else {
         console.error('An error occurred!', response.data);
       }
