@@ -2,7 +2,7 @@
 
 Makes memes with AI. Powered by DallE and ChatGPT. Just enter a prompt and get a meme!
 
-Check it out at: ec2-52-6-200-164.compute-1.amazonaws.com
+Check it out [here](http://ec2-52-6-200-164.compute-1.amazonaws.com)!
 
 ## Installation
 
