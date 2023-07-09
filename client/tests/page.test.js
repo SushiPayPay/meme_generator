@@ -1,7 +1,7 @@
 import axios from 'axios';
-import Home, { InputPrompt, FocusImage, Image } from '../src/app/page';
+import InputPrompt from '../src/components/InputPrompt';
 import "@testing-library/jest-dom";
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
 
 jest.mock('axios'); // Mock axios module
